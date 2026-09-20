@@ -73,6 +73,7 @@ export default function LoginPage() {
               width: "100%",
               padding: "10px",
               marginTop: "5px",
+              color: "black",
             }}
           />
         </div>
@@ -92,6 +93,7 @@ export default function LoginPage() {
               width: "100%",
               padding: "10px",
               marginTop: "5px",
+              color: "black",
             }}
           />
         </div>
@@ -120,13 +122,7 @@ export default function LoginPage() {
         </button>
       </form>
 
-      <p style={{ marginTop: "20px" }}>
-        Demo account:
-        <br />
-        <strong>admin@loop.demo</strong>
-        <br />
-        Password: <strong>demo-password</strong>
-      </p>
+ 
     </main>
   );
 }
