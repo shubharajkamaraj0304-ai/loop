@@ -47,19 +47,44 @@ export default function LoginPage() {
     }
   }
 
-  return (
-    <main
+return (
+  <main
+    style={{
+      minHeight: "100vh",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      backgroundColor: "#f5f5f5",
+    }}
+  >
+    <div
       style={{
-        maxWidth: "400px",
-        margin: "80px auto",
-        padding: "20px",
+        width: "400px",
+        padding: "30px",
+        backgroundColor: "white",
+        border: "2px solid black",
+        borderRadius: "10px",
+        boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
       }}
     >
-      <h1>LOOP Login</h1>
+      <h1
+        style={{
+          color: "black",
+          textAlign: "center",
+          marginBottom: "25px",
+        }}
+      >
+        LOOP Login
+      </h1>
 
       <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: "15px" }}>
-          <label htmlFor="email">Email</label>
+        <div style={{ marginBottom: "18px" }}>
+          <label
+            htmlFor="email"
+            style={{ color: "black", display: "block", marginBottom: "5px" }}
+          >
+            Email
+          </label>
 
           <input
             id="email"
@@ -72,14 +97,22 @@ export default function LoginPage() {
             style={{
               width: "100%",
               padding: "10px",
-              marginTop: "5px",
               color: "black",
+              backgroundColor: "white",
+              border: "1px solid black",
+              borderRadius: "5px",
+              boxSizing: "border-box",
             }}
           />
         </div>
 
-        <div style={{ marginBottom: "15px" }}>
-          <label htmlFor="password">Password</label>
+        <div style={{ marginBottom: "18px" }}>
+          <label
+            htmlFor="password"
+            style={{ color: "black", display: "block", marginBottom: "5px" }}
+          >
+            Password
+          </label>
 
           <input
             id="password"
@@ -92,8 +125,11 @@ export default function LoginPage() {
             style={{
               width: "100%",
               padding: "10px",
-              marginTop: "5px",
               color: "black",
+              backgroundColor: "white",
+              border: "1px solid black",
+              borderRadius: "5px",
+              boxSizing: "border-box",
             }}
           />
         </div>
@@ -116,13 +152,17 @@ export default function LoginPage() {
           style={{
             width: "100%",
             padding: "12px",
+            backgroundColor: "black",
+            color: "white",
+            border: "none",
+            borderRadius: "5px",
+            cursor: loading ? "not-allowed" : "pointer",
           }}
         >
           {loading ? "Signing in..." : "Sign In"}
         </button>
       </form>
-
- 
-    </main>
-  );
+    </div>
+  </main>
+);
 }
