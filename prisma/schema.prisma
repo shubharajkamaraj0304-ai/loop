@@ -1,0 +1,132 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  ADMIN
+  ANALYST
+  VIEWER
+}
+
+enum FeedbackStatus {
+  NEW
+  REVIEWED
+  RESOLVED
+  ARCHIVED
+}
+
+enum FeedbackSource {
+  MANUAL
+  CSV
+  API
+  IMPORT
+}
+
+model Workspace {
+  id        Int      @id @default(autoincrement())
+  name      String
+  slug      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  users      User[]
+  feedback   Feedback[]
+  themes     Theme[]
+  embeddings Embedding[]
+  reports    Report[]
+}
+
+model User {
+  id          Int      @id @default(autoincrement())
+  name        String
+  email       String   @unique
+  password    String
+  role        UserRole @default(VIEWER)
+  workspaceId Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId])
+}
+
+model Feedback {
+  id            Int            @id @default(autoincrement())
+  workspaceId   Int
+  text          String
+  source        FeedbackSource @default(MANUAL)
+  status        FeedbackStatus @default(NEW)
+  sentiment     String?
+  rating        Int?
+  customerName  String?
+  customerEmail String?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  workspace Workspace       @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  themes    FeedbackTheme[]
+  embedding Embedding?
+
+  @@index([workspaceId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model Theme {
+  id          Int      @id @default(autoincrement())
+  workspaceId Int
+  name        String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  workspace Workspace       @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  feedback  FeedbackTheme[]
+
+  @@index([workspaceId])
+}
+
+model FeedbackTheme {
+  feedbackId Int
+  themeId    Int
+  confidence Float?
+
+  feedback Feedback @relation(fields: [feedbackId], references: [id], onDelete: Cascade)
+  theme    Theme    @relation(fields: [themeId], references: [id], onDelete: Cascade)
+
+  @@id([feedbackId, themeId])
+  @@index([themeId])
+}
+
+model Embedding {
+  id          Int      @id @default(autoincrement())
+  workspaceId Int
+  feedbackId  Int      @unique
+  vector      String
+  model       String?
+  createdAt   DateTime @default(now())
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  feedback  Feedback  @relation(fields: [feedbackId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId])
+}
+
+model Report {
+  id          Int      @id @default(autoincrement())
+  workspaceId Int
+  title       String
+  content     String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId])
+}
