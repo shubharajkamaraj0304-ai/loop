@@ -1,4 +1,3 @@
-
 "use client";
 
 import { FormEvent, useState } from "react";
@@ -12,6 +11,7 @@ export default function AddFeedbackPage() {
   const [customerEmail, setCustomerEmail] = useState("");
   const [rating, setRating] = useState("");
   const [sentiment, setSentiment] = useState("");
+  const [channel, setChannel] = useState("");
 
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
@@ -20,13 +20,16 @@ export default function AddFeedbackPage() {
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    console.log("SUBMIT BUTTON CLICKED");
-
     setMessage("");
     setError("");
 
     if (!text.trim()) {
       setError("Feedback text is required.");
+      return;
+    }
+
+    if (!channel) {
+      setError("Channel is required.");
       return;
     }
 
@@ -39,11 +42,10 @@ export default function AddFeedbackPage() {
         customerEmail: customerEmail.trim() || null,
         rating: rating ? Number(rating) : null,
         sentiment: sentiment || null,
+        channel,
         source: "MANUAL",
         status: "NEW",
       };
-
-      console.log("SENDING DATA:", payload);
 
       const response = await fetch("/api/feedback", {
         method: "POST",
@@ -53,11 +55,7 @@ export default function AddFeedbackPage() {
         body: JSON.stringify(payload),
       });
 
-      console.log("POST STATUS:", response.status);
-
       const result = await response.json();
-
-      console.log("API RESPONSE:", result);
 
       if (!response.ok) {
         setError(result.message || "Failed to create feedback.");
@@ -71,6 +69,7 @@ export default function AddFeedbackPage() {
       setCustomerEmail("");
       setRating("");
       setSentiment("");
+      setChannel("");
 
       setTimeout(() => {
         router.push("/feedback");
@@ -86,7 +85,6 @@ export default function AddFeedbackPage() {
   return (
     <main className="min-h-screen bg-gray-50 p-6">
       <div className="mx-auto max-w-2xl">
-
         {/* Header */}
         <div className="mb-6">
           <button
@@ -108,9 +106,7 @@ export default function AddFeedbackPage() {
 
         {/* Form Card */}
         <div className="rounded-xl border bg-white p-6 shadow-sm">
-
           <form onSubmit={handleSubmit}>
-
             {/* Feedback */}
             <div className="mb-5">
               <label
@@ -166,6 +162,31 @@ export default function AddFeedbackPage() {
                 placeholder="john@example.com"
                 className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
               />
+            </div>
+
+            {/* Channel */}
+            <div className="mb-5">
+              <label
+                htmlFor="channel"
+                className="mb-2 block text-sm font-medium text-gray-700"
+              >
+                Channel *
+              </label>
+
+              <select
+                id="channel"
+                value={channel}
+                onChange={(event) => setChannel(event.target.value)}
+                required
+                className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+              >
+                <option value="">Select channel</option>
+<option value="MANUAL">Manual</option>
+<option value="WEB">Website</option>
+<option value="EMAIL">Email</option>
+<option value="CHAT">Chat</option>
+<option value="SIMULATED">Simulated</option>
+              </select>
             </div>
 
             {/* Rating */}
@@ -230,7 +251,6 @@ export default function AddFeedbackPage() {
 
             {/* Buttons */}
             <div className="flex gap-3">
-
               <button
                 type="submit"
                 disabled={loading}
@@ -247,7 +267,6 @@ export default function AddFeedbackPage() {
               >
                 Cancel
               </button>
-
             </div>
           </form>
         </div>

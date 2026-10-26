@@ -29,12 +29,14 @@ export type AggregateFeedback = {
 export type FeedbackAvgAggregateOutputType = {
   id: number | null
   workspaceId: number | null
+  sentimentScore: number | null
   rating: number | null
 }
 
 export type FeedbackSumAggregateOutputType = {
   id: number | null
   workspaceId: number | null
+  sentimentScore: number | null
   rating: number | null
 }
 
@@ -42,9 +44,12 @@ export type FeedbackMinAggregateOutputType = {
   id: number | null
   workspaceId: number | null
   text: string | null
+  channel: string | null
   source: $Enums.FeedbackSource | null
   status: $Enums.FeedbackStatus | null
   sentiment: string | null
+  sentimentScore: number | null
+  featureArea: string | null
   rating: number | null
   customerName: string | null
   customerEmail: string | null
@@ -56,9 +61,12 @@ export type FeedbackMaxAggregateOutputType = {
   id: number | null
   workspaceId: number | null
   text: string | null
+  channel: string | null
   source: $Enums.FeedbackSource | null
   status: $Enums.FeedbackStatus | null
   sentiment: string | null
+  sentimentScore: number | null
+  featureArea: string | null
   rating: number | null
   customerName: string | null
   customerEmail: string | null
@@ -70,9 +78,12 @@ export type FeedbackCountAggregateOutputType = {
   id: number
   workspaceId: number
   text: number
+  channel: number
   source: number
   status: number
   sentiment: number
+  sentimentScore: number
+  featureArea: number
   rating: number
   customerName: number
   customerEmail: number
@@ -85,12 +96,14 @@ export type FeedbackCountAggregateOutputType = {
 export type FeedbackAvgAggregateInputType = {
   id?: true
   workspaceId?: true
+  sentimentScore?: true
   rating?: true
 }
 
 export type FeedbackSumAggregateInputType = {
   id?: true
   workspaceId?: true
+  sentimentScore?: true
   rating?: true
 }
 
@@ -98,9 +111,12 @@ export type FeedbackMinAggregateInputType = {
   id?: true
   workspaceId?: true
   text?: true
+  channel?: true
   source?: true
   status?: true
   sentiment?: true
+  sentimentScore?: true
+  featureArea?: true
   rating?: true
   customerName?: true
   customerEmail?: true
@@ -112,9 +128,12 @@ export type FeedbackMaxAggregateInputType = {
   id?: true
   workspaceId?: true
   text?: true
+  channel?: true
   source?: true
   status?: true
   sentiment?: true
+  sentimentScore?: true
+  featureArea?: true
   rating?: true
   customerName?: true
   customerEmail?: true
@@ -126,9 +145,12 @@ export type FeedbackCountAggregateInputType = {
   id?: true
   workspaceId?: true
   text?: true
+  channel?: true
   source?: true
   status?: true
   sentiment?: true
+  sentimentScore?: true
+  featureArea?: true
   rating?: true
   customerName?: true
   customerEmail?: true
@@ -227,9 +249,12 @@ export type FeedbackGroupByOutputType = {
   id: number
   workspaceId: number
   text: string
+  channel: string
   source: $Enums.FeedbackSource
   status: $Enums.FeedbackStatus
   sentiment: string | null
+  sentimentScore: number | null
+  featureArea: string | null
   rating: number | null
   customerName: string | null
   customerEmail: string | null
@@ -264,9 +289,12 @@ export type FeedbackWhereInput = {
   id?: Prisma.IntFilter<"Feedback"> | number
   workspaceId?: Prisma.IntFilter<"Feedback"> | number
   text?: Prisma.StringFilter<"Feedback"> | string
+  channel?: Prisma.StringFilter<"Feedback"> | string
   source?: Prisma.EnumFeedbackSourceFilter<"Feedback"> | $Enums.FeedbackSource
   status?: Prisma.EnumFeedbackStatusFilter<"Feedback"> | $Enums.FeedbackStatus
   sentiment?: Prisma.StringNullableFilter<"Feedback"> | string | null
+  sentimentScore?: Prisma.FloatNullableFilter<"Feedback"> | number | null
+  featureArea?: Prisma.StringNullableFilter<"Feedback"> | string | null
   rating?: Prisma.IntNullableFilter<"Feedback"> | number | null
   customerName?: Prisma.StringNullableFilter<"Feedback"> | string | null
   customerEmail?: Prisma.StringNullableFilter<"Feedback"> | string | null
@@ -281,9 +309,12 @@ export type FeedbackOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   workspaceId?: Prisma.SortOrder
   text?: Prisma.SortOrder
+  channel?: Prisma.SortOrder
   source?: Prisma.SortOrder
   status?: Prisma.SortOrder
   sentiment?: Prisma.SortOrderInput | Prisma.SortOrder
+  sentimentScore?: Prisma.SortOrderInput | Prisma.SortOrder
+  featureArea?: Prisma.SortOrderInput | Prisma.SortOrder
   rating?: Prisma.SortOrderInput | Prisma.SortOrder
   customerName?: Prisma.SortOrderInput | Prisma.SortOrder
   customerEmail?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -301,9 +332,12 @@ export type FeedbackWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.FeedbackWhereInput | Prisma.FeedbackWhereInput[]
   workspaceId?: Prisma.IntFilter<"Feedback"> | number
   text?: Prisma.StringFilter<"Feedback"> | string
+  channel?: Prisma.StringFilter<"Feedback"> | string
   source?: Prisma.EnumFeedbackSourceFilter<"Feedback"> | $Enums.FeedbackSource
   status?: Prisma.EnumFeedbackStatusFilter<"Feedback"> | $Enums.FeedbackStatus
   sentiment?: Prisma.StringNullableFilter<"Feedback"> | string | null
+  sentimentScore?: Prisma.FloatNullableFilter<"Feedback"> | number | null
+  featureArea?: Prisma.StringNullableFilter<"Feedback"> | string | null
   rating?: Prisma.IntNullableFilter<"Feedback"> | number | null
   customerName?: Prisma.StringNullableFilter<"Feedback"> | string | null
   customerEmail?: Prisma.StringNullableFilter<"Feedback"> | string | null
@@ -318,9 +352,12 @@ export type FeedbackOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   workspaceId?: Prisma.SortOrder
   text?: Prisma.SortOrder
+  channel?: Prisma.SortOrder
   source?: Prisma.SortOrder
   status?: Prisma.SortOrder
   sentiment?: Prisma.SortOrderInput | Prisma.SortOrder
+  sentimentScore?: Prisma.SortOrderInput | Prisma.SortOrder
+  featureArea?: Prisma.SortOrderInput | Prisma.SortOrder
   rating?: Prisma.SortOrderInput | Prisma.SortOrder
   customerName?: Prisma.SortOrderInput | Prisma.SortOrder
   customerEmail?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -340,9 +377,12 @@ export type FeedbackScalarWhereWithAggregatesInput = {
   id?: Prisma.IntWithAggregatesFilter<"Feedback"> | number
   workspaceId?: Prisma.IntWithAggregatesFilter<"Feedback"> | number
   text?: Prisma.StringWithAggregatesFilter<"Feedback"> | string
+  channel?: Prisma.StringWithAggregatesFilter<"Feedback"> | string
   source?: Prisma.EnumFeedbackSourceWithAggregatesFilter<"Feedback"> | $Enums.FeedbackSource
   status?: Prisma.EnumFeedbackStatusWithAggregatesFilter<"Feedback"> | $Enums.FeedbackStatus
   sentiment?: Prisma.StringNullableWithAggregatesFilter<"Feedback"> | string | null
+  sentimentScore?: Prisma.FloatNullableWithAggregatesFilter<"Feedback"> | number | null
+  featureArea?: Prisma.StringNullableWithAggregatesFilter<"Feedback"> | string | null
   rating?: Prisma.IntNullableWithAggregatesFilter<"Feedback"> | number | null
   customerName?: Prisma.StringNullableWithAggregatesFilter<"Feedback"> | string | null
   customerEmail?: Prisma.StringNullableWithAggregatesFilter<"Feedback"> | string | null
@@ -352,9 +392,12 @@ export type FeedbackScalarWhereWithAggregatesInput = {
 
 export type FeedbackCreateInput = {
   text: string
+  channel?: string
   source?: $Enums.FeedbackSource
   status?: $Enums.FeedbackStatus
   sentiment?: string | null
+  sentimentScore?: number | null
+  featureArea?: string | null
   rating?: number | null
   customerName?: string | null
   customerEmail?: string | null
@@ -369,9 +412,12 @@ export type FeedbackUncheckedCreateInput = {
   id?: number
   workspaceId: number
   text: string
+  channel?: string
   source?: $Enums.FeedbackSource
   status?: $Enums.FeedbackStatus
   sentiment?: string | null
+  sentimentScore?: number | null
+  featureArea?: string | null
   rating?: number | null
   customerName?: string | null
   customerEmail?: string | null
@@ -383,9 +429,12 @@ export type FeedbackUncheckedCreateInput = {
 
 export type FeedbackUpdateInput = {
   text?: Prisma.StringFieldUpdateOperationsInput | string
+  channel?: Prisma.StringFieldUpdateOperationsInput | string
   source?: Prisma.EnumFeedbackSourceFieldUpdateOperationsInput | $Enums.FeedbackSource
   status?: Prisma.EnumFeedbackStatusFieldUpdateOperationsInput | $Enums.FeedbackStatus
   sentiment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sentimentScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  featureArea?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rating?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   customerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -400,9 +449,12 @@ export type FeedbackUncheckedUpdateInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   workspaceId?: Prisma.IntFieldUpdateOperationsInput | number
   text?: Prisma.StringFieldUpdateOperationsInput | string
+  channel?: Prisma.StringFieldUpdateOperationsInput | string
   source?: Prisma.EnumFeedbackSourceFieldUpdateOperationsInput | $Enums.FeedbackSource
   status?: Prisma.EnumFeedbackStatusFieldUpdateOperationsInput | $Enums.FeedbackStatus
   sentiment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sentimentScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  featureArea?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rating?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   customerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -416,9 +468,12 @@ export type FeedbackCreateManyInput = {
   id?: number
   workspaceId: number
   text: string
+  channel?: string
   source?: $Enums.FeedbackSource
   status?: $Enums.FeedbackStatus
   sentiment?: string | null
+  sentimentScore?: number | null
+  featureArea?: string | null
   rating?: number | null
   customerName?: string | null
   customerEmail?: string | null
@@ -428,9 +483,12 @@ export type FeedbackCreateManyInput = {
 
 export type FeedbackUpdateManyMutationInput = {
   text?: Prisma.StringFieldUpdateOperationsInput | string
+  channel?: Prisma.StringFieldUpdateOperationsInput | string
   source?: Prisma.EnumFeedbackSourceFieldUpdateOperationsInput | $Enums.FeedbackSource
   status?: Prisma.EnumFeedbackStatusFieldUpdateOperationsInput | $Enums.FeedbackStatus
   sentiment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sentimentScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  featureArea?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rating?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   customerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -442,9 +500,12 @@ export type FeedbackUncheckedUpdateManyInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   workspaceId?: Prisma.IntFieldUpdateOperationsInput | number
   text?: Prisma.StringFieldUpdateOperationsInput | string
+  channel?: Prisma.StringFieldUpdateOperationsInput | string
   source?: Prisma.EnumFeedbackSourceFieldUpdateOperationsInput | $Enums.FeedbackSource
   status?: Prisma.EnumFeedbackStatusFieldUpdateOperationsInput | $Enums.FeedbackStatus
   sentiment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sentimentScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  featureArea?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rating?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   customerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -466,9 +527,12 @@ export type FeedbackCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   workspaceId?: Prisma.SortOrder
   text?: Prisma.SortOrder
+  channel?: Prisma.SortOrder
   source?: Prisma.SortOrder
   status?: Prisma.SortOrder
   sentiment?: Prisma.SortOrder
+  sentimentScore?: Prisma.SortOrder
+  featureArea?: Prisma.SortOrder
   rating?: Prisma.SortOrder
   customerName?: Prisma.SortOrder
   customerEmail?: Prisma.SortOrder
@@ -479,6 +543,7 @@ export type FeedbackCountOrderByAggregateInput = {
 export type FeedbackAvgOrderByAggregateInput = {
   id?: Prisma.SortOrder
   workspaceId?: Prisma.SortOrder
+  sentimentScore?: Prisma.SortOrder
   rating?: Prisma.SortOrder
 }
 
@@ -486,9 +551,12 @@ export type FeedbackMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   workspaceId?: Prisma.SortOrder
   text?: Prisma.SortOrder
+  channel?: Prisma.SortOrder
   source?: Prisma.SortOrder
   status?: Prisma.SortOrder
   sentiment?: Prisma.SortOrder
+  sentimentScore?: Prisma.SortOrder
+  featureArea?: Prisma.SortOrder
   rating?: Prisma.SortOrder
   customerName?: Prisma.SortOrder
   customerEmail?: Prisma.SortOrder
@@ -500,9 +568,12 @@ export type FeedbackMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   workspaceId?: Prisma.SortOrder
   text?: Prisma.SortOrder
+  channel?: Prisma.SortOrder
   source?: Prisma.SortOrder
   status?: Prisma.SortOrder
   sentiment?: Prisma.SortOrder
+  sentimentScore?: Prisma.SortOrder
+  featureArea?: Prisma.SortOrder
   rating?: Prisma.SortOrder
   customerName?: Prisma.SortOrder
   customerEmail?: Prisma.SortOrder
@@ -513,6 +584,7 @@ export type FeedbackMinOrderByAggregateInput = {
 export type FeedbackSumOrderByAggregateInput = {
   id?: Prisma.SortOrder
   workspaceId?: Prisma.SortOrder
+  sentimentScore?: Prisma.SortOrder
   rating?: Prisma.SortOrder
 }
 
@@ -575,6 +647,14 @@ export type NullableStringFieldUpdateOperationsInput = {
   set?: string | null
 }
 
+export type NullableFloatFieldUpdateOperationsInput = {
+  set?: number | null
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
+}
+
 export type NullableIntFieldUpdateOperationsInput = {
   set?: number | null
   increment?: number
@@ -613,9 +693,12 @@ export type FeedbackUpdateOneRequiredWithoutEmbeddingNestedInput = {
 
 export type FeedbackCreateWithoutWorkspaceInput = {
   text: string
+  channel?: string
   source?: $Enums.FeedbackSource
   status?: $Enums.FeedbackStatus
   sentiment?: string | null
+  sentimentScore?: number | null
+  featureArea?: string | null
   rating?: number | null
   customerName?: string | null
   customerEmail?: string | null
@@ -628,9 +711,12 @@ export type FeedbackCreateWithoutWorkspaceInput = {
 export type FeedbackUncheckedCreateWithoutWorkspaceInput = {
   id?: number
   text: string
+  channel?: string
   source?: $Enums.FeedbackSource
   status?: $Enums.FeedbackStatus
   sentiment?: string | null
+  sentimentScore?: number | null
+  featureArea?: string | null
   rating?: number | null
   customerName?: string | null
   customerEmail?: string | null
@@ -673,9 +759,12 @@ export type FeedbackScalarWhereInput = {
   id?: Prisma.IntFilter<"Feedback"> | number
   workspaceId?: Prisma.IntFilter<"Feedback"> | number
   text?: Prisma.StringFilter<"Feedback"> | string
+  channel?: Prisma.StringFilter<"Feedback"> | string
   source?: Prisma.EnumFeedbackSourceFilter<"Feedback"> | $Enums.FeedbackSource
   status?: Prisma.EnumFeedbackStatusFilter<"Feedback"> | $Enums.FeedbackStatus
   sentiment?: Prisma.StringNullableFilter<"Feedback"> | string | null
+  sentimentScore?: Prisma.FloatNullableFilter<"Feedback"> | number | null
+  featureArea?: Prisma.StringNullableFilter<"Feedback"> | string | null
   rating?: Prisma.IntNullableFilter<"Feedback"> | number | null
   customerName?: Prisma.StringNullableFilter<"Feedback"> | string | null
   customerEmail?: Prisma.StringNullableFilter<"Feedback"> | string | null
@@ -685,9 +774,12 @@ export type FeedbackScalarWhereInput = {
 
 export type FeedbackCreateWithoutThemesInput = {
   text: string
+  channel?: string
   source?: $Enums.FeedbackSource
   status?: $Enums.FeedbackStatus
   sentiment?: string | null
+  sentimentScore?: number | null
+  featureArea?: string | null
   rating?: number | null
   customerName?: string | null
   customerEmail?: string | null
@@ -701,9 +793,12 @@ export type FeedbackUncheckedCreateWithoutThemesInput = {
   id?: number
   workspaceId: number
   text: string
+  channel?: string
   source?: $Enums.FeedbackSource
   status?: $Enums.FeedbackStatus
   sentiment?: string | null
+  sentimentScore?: number | null
+  featureArea?: string | null
   rating?: number | null
   customerName?: string | null
   customerEmail?: string | null
@@ -730,9 +825,12 @@ export type FeedbackUpdateToOneWithWhereWithoutThemesInput = {
 
 export type FeedbackUpdateWithoutThemesInput = {
   text?: Prisma.StringFieldUpdateOperationsInput | string
+  channel?: Prisma.StringFieldUpdateOperationsInput | string
   source?: Prisma.EnumFeedbackSourceFieldUpdateOperationsInput | $Enums.FeedbackSource
   status?: Prisma.EnumFeedbackStatusFieldUpdateOperationsInput | $Enums.FeedbackStatus
   sentiment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sentimentScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  featureArea?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rating?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   customerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -746,9 +844,12 @@ export type FeedbackUncheckedUpdateWithoutThemesInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   workspaceId?: Prisma.IntFieldUpdateOperationsInput | number
   text?: Prisma.StringFieldUpdateOperationsInput | string
+  channel?: Prisma.StringFieldUpdateOperationsInput | string
   source?: Prisma.EnumFeedbackSourceFieldUpdateOperationsInput | $Enums.FeedbackSource
   status?: Prisma.EnumFeedbackStatusFieldUpdateOperationsInput | $Enums.FeedbackStatus
   sentiment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sentimentScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  featureArea?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rating?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   customerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -759,9 +860,12 @@ export type FeedbackUncheckedUpdateWithoutThemesInput = {
 
 export type FeedbackCreateWithoutEmbeddingInput = {
   text: string
+  channel?: string
   source?: $Enums.FeedbackSource
   status?: $Enums.FeedbackStatus
   sentiment?: string | null
+  sentimentScore?: number | null
+  featureArea?: string | null
   rating?: number | null
   customerName?: string | null
   customerEmail?: string | null
@@ -775,9 +879,12 @@ export type FeedbackUncheckedCreateWithoutEmbeddingInput = {
   id?: number
   workspaceId: number
   text: string
+  channel?: string
   source?: $Enums.FeedbackSource
   status?: $Enums.FeedbackStatus
   sentiment?: string | null
+  sentimentScore?: number | null
+  featureArea?: string | null
   rating?: number | null
   customerName?: string | null
   customerEmail?: string | null
@@ -804,9 +911,12 @@ export type FeedbackUpdateToOneWithWhereWithoutEmbeddingInput = {
 
 export type FeedbackUpdateWithoutEmbeddingInput = {
   text?: Prisma.StringFieldUpdateOperationsInput | string
+  channel?: Prisma.StringFieldUpdateOperationsInput | string
   source?: Prisma.EnumFeedbackSourceFieldUpdateOperationsInput | $Enums.FeedbackSource
   status?: Prisma.EnumFeedbackStatusFieldUpdateOperationsInput | $Enums.FeedbackStatus
   sentiment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sentimentScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  featureArea?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rating?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   customerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -820,9 +930,12 @@ export type FeedbackUncheckedUpdateWithoutEmbeddingInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   workspaceId?: Prisma.IntFieldUpdateOperationsInput | number
   text?: Prisma.StringFieldUpdateOperationsInput | string
+  channel?: Prisma.StringFieldUpdateOperationsInput | string
   source?: Prisma.EnumFeedbackSourceFieldUpdateOperationsInput | $Enums.FeedbackSource
   status?: Prisma.EnumFeedbackStatusFieldUpdateOperationsInput | $Enums.FeedbackStatus
   sentiment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sentimentScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  featureArea?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rating?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   customerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -834,9 +947,12 @@ export type FeedbackUncheckedUpdateWithoutEmbeddingInput = {
 export type FeedbackCreateManyWorkspaceInput = {
   id?: number
   text: string
+  channel?: string
   source?: $Enums.FeedbackSource
   status?: $Enums.FeedbackStatus
   sentiment?: string | null
+  sentimentScore?: number | null
+  featureArea?: string | null
   rating?: number | null
   customerName?: string | null
   customerEmail?: string | null
@@ -846,9 +962,12 @@ export type FeedbackCreateManyWorkspaceInput = {
 
 export type FeedbackUpdateWithoutWorkspaceInput = {
   text?: Prisma.StringFieldUpdateOperationsInput | string
+  channel?: Prisma.StringFieldUpdateOperationsInput | string
   source?: Prisma.EnumFeedbackSourceFieldUpdateOperationsInput | $Enums.FeedbackSource
   status?: Prisma.EnumFeedbackStatusFieldUpdateOperationsInput | $Enums.FeedbackStatus
   sentiment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sentimentScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  featureArea?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rating?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   customerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -861,9 +980,12 @@ export type FeedbackUpdateWithoutWorkspaceInput = {
 export type FeedbackUncheckedUpdateWithoutWorkspaceInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   text?: Prisma.StringFieldUpdateOperationsInput | string
+  channel?: Prisma.StringFieldUpdateOperationsInput | string
   source?: Prisma.EnumFeedbackSourceFieldUpdateOperationsInput | $Enums.FeedbackSource
   status?: Prisma.EnumFeedbackStatusFieldUpdateOperationsInput | $Enums.FeedbackStatus
   sentiment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sentimentScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  featureArea?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rating?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   customerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -876,9 +998,12 @@ export type FeedbackUncheckedUpdateWithoutWorkspaceInput = {
 export type FeedbackUncheckedUpdateManyWithoutWorkspaceInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   text?: Prisma.StringFieldUpdateOperationsInput | string
+  channel?: Prisma.StringFieldUpdateOperationsInput | string
   source?: Prisma.EnumFeedbackSourceFieldUpdateOperationsInput | $Enums.FeedbackSource
   status?: Prisma.EnumFeedbackStatusFieldUpdateOperationsInput | $Enums.FeedbackStatus
   sentiment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sentimentScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  featureArea?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rating?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   customerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -921,9 +1046,12 @@ export type FeedbackSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   id?: boolean
   workspaceId?: boolean
   text?: boolean
+  channel?: boolean
   source?: boolean
   status?: boolean
   sentiment?: boolean
+  sentimentScore?: boolean
+  featureArea?: boolean
   rating?: boolean
   customerName?: boolean
   customerEmail?: boolean
@@ -939,9 +1067,12 @@ export type FeedbackSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   id?: boolean
   workspaceId?: boolean
   text?: boolean
+  channel?: boolean
   source?: boolean
   status?: boolean
   sentiment?: boolean
+  sentimentScore?: boolean
+  featureArea?: boolean
   rating?: boolean
   customerName?: boolean
   customerEmail?: boolean
@@ -954,9 +1085,12 @@ export type FeedbackSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   id?: boolean
   workspaceId?: boolean
   text?: boolean
+  channel?: boolean
   source?: boolean
   status?: boolean
   sentiment?: boolean
+  sentimentScore?: boolean
+  featureArea?: boolean
   rating?: boolean
   customerName?: boolean
   customerEmail?: boolean
@@ -969,9 +1103,12 @@ export type FeedbackSelectScalar = {
   id?: boolean
   workspaceId?: boolean
   text?: boolean
+  channel?: boolean
   source?: boolean
   status?: boolean
   sentiment?: boolean
+  sentimentScore?: boolean
+  featureArea?: boolean
   rating?: boolean
   customerName?: boolean
   customerEmail?: boolean
@@ -979,7 +1116,7 @@ export type FeedbackSelectScalar = {
   updatedAt?: boolean
 }
 
-export type FeedbackOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "workspaceId" | "text" | "source" | "status" | "sentiment" | "rating" | "customerName" | "customerEmail" | "createdAt" | "updatedAt", ExtArgs["result"]["feedback"]>
+export type FeedbackOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "workspaceId" | "text" | "channel" | "source" | "status" | "sentiment" | "sentimentScore" | "featureArea" | "rating" | "customerName" | "customerEmail" | "createdAt" | "updatedAt", ExtArgs["result"]["feedback"]>
 export type FeedbackInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   workspace?: boolean | Prisma.WorkspaceDefaultArgs<ExtArgs>
   themes?: boolean | Prisma.Feedback$themesArgs<ExtArgs>
@@ -1004,9 +1141,12 @@ export type $FeedbackPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     id: number
     workspaceId: number
     text: string
+    channel: string
     source: $Enums.FeedbackSource
     status: $Enums.FeedbackStatus
     sentiment: string | null
+    sentimentScore: number | null
+    featureArea: string | null
     rating: number | null
     customerName: string | null
     customerEmail: string | null
@@ -1441,9 +1581,12 @@ export interface FeedbackFieldRefs {
   readonly id: Prisma.FieldRef<"Feedback", 'Int'>
   readonly workspaceId: Prisma.FieldRef<"Feedback", 'Int'>
   readonly text: Prisma.FieldRef<"Feedback", 'String'>
+  readonly channel: Prisma.FieldRef<"Feedback", 'String'>
   readonly source: Prisma.FieldRef<"Feedback", 'FeedbackSource'>
   readonly status: Prisma.FieldRef<"Feedback", 'FeedbackStatus'>
   readonly sentiment: Prisma.FieldRef<"Feedback", 'String'>
+  readonly sentimentScore: Prisma.FieldRef<"Feedback", 'Float'>
+  readonly featureArea: Prisma.FieldRef<"Feedback", 'String'>
   readonly rating: Prisma.FieldRef<"Feedback", 'Int'>
   readonly customerName: Prisma.FieldRef<"Feedback", 'String'>
   readonly customerEmail: Prisma.FieldRef<"Feedback", 'String'>

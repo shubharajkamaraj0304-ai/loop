@@ -57,24 +57,28 @@ model User {
 }
 
 model Feedback {
-  id            Int            @id @default(autoincrement())
-  workspaceId   Int
-  text          String
-  source        FeedbackSource @default(MANUAL)
-  status        FeedbackStatus @default(NEW)
-  sentiment     String?
-  rating        Int?
-  customerName  String?
-  customerEmail String?
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
+  id             Int            @id @default(autoincrement())
+  workspaceId    Int
+  text           String
+  channel        String         @default("MANUAL")
+  source         FeedbackSource @default(MANUAL)
+  status         FeedbackStatus @default(NEW)
+  sentiment      String?
+  sentimentScore Float?
+  featureArea    String?
+  rating         Int?
+  customerName   String?
+  customerEmail  String?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
 
-  workspace Workspace       @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  themes    FeedbackTheme[]
-  embedding Embedding?
+  workspace    Workspace      @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  themes       FeedbackTheme[]
+  embedding    Embedding?
 
   @@index([workspaceId])
   @@index([status])
+  @@index([channel])
   @@index([createdAt])
 }
 

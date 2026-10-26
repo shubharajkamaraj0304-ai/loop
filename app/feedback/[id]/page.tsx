@@ -1,7 +1,8 @@
 "use client";
 
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useCallback, useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+import { getSession } from "next-auth/react";
 
 type Feedback = {
   id: number;
@@ -41,10 +42,35 @@ export default function FeedbackDetailsPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
+  const [userRole, setUserRole] = useState("");
+  const [roleLoading, setRoleLoading] = useState(true);
+
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
 
-  async function loadFeedback() {
+  const canEdit =
+    userRole === "ADMIN" || userRole === "ANALYST";
+
+  const loadSession = useCallback(async () => {
+    try {
+      setRoleLoading(true);
+
+      const session = await getSession();
+
+      setUserRole(session?.user?.role || "");
+    } catch (error) {
+      console.error("Failed to load session:", error);
+      setUserRole("");
+    } finally {
+      setRoleLoading(false);
+    }
+  }, []);
+
+  const loadFeedback = useCallback(async () => {
+    if (!id) {
+      return;
+    }
+
     try {
       setLoading(true);
       setError("");
@@ -73,16 +99,24 @@ export default function FeedbackDetailsPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [id]);
 
   useEffect(() => {
-    if (id) {
-      loadFeedback();
+    if (!id) {
+      return;
     }
-  }, [id]);
+
+    loadSession();
+    loadFeedback();
+  }, [id, loadSession, loadFeedback]);
 
   async function handleSave(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
+    if (!canEdit) {
+      setError("You do not have permission to edit feedback.");
+      return;
+    }
 
     setError("");
     setMessage("");
@@ -131,6 +165,11 @@ export default function FeedbackDetailsPage() {
   }
 
   async function handleDelete() {
+    if (!canEdit) {
+      setError("You do not have permission to delete feedback.");
+      return;
+    }
+
     const confirmed = window.confirm(
       "Are you sure you want to delete this feedback?"
     );
@@ -181,7 +220,7 @@ export default function FeedbackDetailsPage() {
     setEditing(false);
   }
 
-  if (loading) {
+  if (loading || roleLoading) {
     return (
       <main className="min-h-screen bg-gray-50 p-6">
         <div className="mx-auto max-w-3xl rounded-xl border bg-white p-10 text-center">
@@ -224,7 +263,6 @@ export default function FeedbackDetailsPage() {
   return (
     <main className="min-h-screen bg-gray-50 p-6">
       <div className="mx-auto max-w-3xl">
-
         <button
           type="button"
           onClick={() => router.push("/feedback")}
@@ -240,11 +278,13 @@ export default function FeedbackDetailsPage() {
             </h1>
 
             <p className="mt-1 text-gray-500">
-              View and edit customer feedback.
+              {canEdit
+                ? "View and edit customer feedback."
+                : "View customer feedback."}
             </p>
           </div>
 
-          {!editing && (
+          {!editing && canEdit && (
             <div className="flex gap-2">
               <button
                 type="button"
@@ -284,9 +324,7 @@ export default function FeedbackDetailsPage() {
 
         {editing ? (
           <div className="rounded-xl border bg-white p-6 shadow-sm">
-
             <form onSubmit={handleSave}>
-
               <div className="mb-5">
                 <label
                   htmlFor="feedback"
@@ -316,7 +354,9 @@ export default function FeedbackDetailsPage() {
                   id="customerName"
                   type="text"
                   value={customerName}
-                  onChange={(event) => setCustomerName(event.target.value)}
+                  onChange={(event) =>
+                    setCustomerName(event.target.value)
+                  }
                   className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                 />
               </div>
@@ -333,7 +373,9 @@ export default function FeedbackDetailsPage() {
                   id="customerEmail"
                   type="email"
                   value={customerEmail}
-                  onChange={(event) => setCustomerEmail(event.target.value)}
+                  onChange={(event) =>
+                    setCustomerEmail(event.target.value)
+                  }
                   className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                 />
               </div>
@@ -372,7 +414,9 @@ export default function FeedbackDetailsPage() {
                 <select
                   id="sentiment"
                   value={sentiment}
-                  onChange={(event) => setSentiment(event.target.value)}
+                  onChange={(event) =>
+                    setSentiment(event.target.value)
+                  }
                   className="w-full rounded-lg border border-gray-300 px-4 py-3"
                 >
                   <option value="">No sentiment</option>
@@ -404,7 +448,6 @@ export default function FeedbackDetailsPage() {
               </div>
 
               <div className="flex gap-3">
-
                 <button
                   type="submit"
                   disabled={saving}
@@ -421,16 +464,12 @@ export default function FeedbackDetailsPage() {
                 >
                   Cancel
                 </button>
-
               </div>
-
             </form>
           </div>
         ) : (
           <div className="rounded-xl border bg-white p-6 shadow-sm">
-
             <div className="mb-6 flex flex-col justify-between gap-4 md:flex-row">
-
               <div>
                 <h2 className="text-xl font-semibold text-gray-900">
                   {feedback.customerName || "Anonymous Customer"}
@@ -444,7 +483,6 @@ export default function FeedbackDetailsPage() {
               </div>
 
               <div className="flex flex-wrap gap-2">
-
                 <span className="rounded-full bg-gray-100 px-3 py-1 text-xs">
                   {feedback.source}
                 </span>
@@ -458,13 +496,10 @@ export default function FeedbackDetailsPage() {
                     {feedback.sentiment}
                   </span>
                 )}
-
               </div>
-
             </div>
 
             <div className="border-t pt-6">
-
               <h3 className="mb-2 text-sm font-semibold text-gray-700">
                 Feedback
               </h3>
@@ -472,15 +507,11 @@ export default function FeedbackDetailsPage() {
               <p className="leading-7 text-gray-700">
                 {feedback.text}
               </p>
-
             </div>
 
             <div className="mt-6 grid gap-4 border-t pt-6 md:grid-cols-2">
-
               <div>
-                <p className="text-sm text-gray-500">
-                  Rating
-                </p>
+                <p className="text-sm text-gray-500">Rating</p>
 
                 <p className="mt-1 font-medium text-gray-900">
                   {feedback.rating ?? "Not provided"}
@@ -488,9 +519,7 @@ export default function FeedbackDetailsPage() {
               </div>
 
               <div>
-                <p className="text-sm text-gray-500">
-                  Source
-                </p>
+                <p className="text-sm text-gray-500">Source</p>
 
                 <p className="mt-1 font-medium text-gray-900">
                   {feedback.source}
@@ -498,9 +527,7 @@ export default function FeedbackDetailsPage() {
               </div>
 
               <div>
-                <p className="text-sm text-gray-500">
-                  Created
-                </p>
+                <p className="text-sm text-gray-500">Created</p>
 
                 <p className="mt-1 font-medium text-gray-900">
                   {new Date(feedback.createdAt).toLocaleString()}
@@ -508,26 +535,21 @@ export default function FeedbackDetailsPage() {
               </div>
 
               <div>
-                <p className="text-sm text-gray-500">
-                  Last Updated
-                </p>
+                <p className="text-sm text-gray-500">Last Updated</p>
 
                 <p className="mt-1 font-medium text-gray-900">
                   {new Date(feedback.updatedAt).toLocaleString()}
                 </p>
               </div>
-
             </div>
 
             {feedback.themes.length > 0 && (
               <div className="mt-6 border-t pt-6">
-
                 <h3 className="mb-3 text-sm font-semibold text-gray-700">
                   Themes
                 </h3>
 
                 <div className="flex flex-wrap gap-2">
-
                   {feedback.themes.map((relation) => (
                     <span
                       key={relation.theme.id}
@@ -536,15 +558,11 @@ export default function FeedbackDetailsPage() {
                       {relation.theme.name}
                     </span>
                   ))}
-
                 </div>
-
               </div>
             )}
-
           </div>
         )}
-
       </div>
     </main>
   );

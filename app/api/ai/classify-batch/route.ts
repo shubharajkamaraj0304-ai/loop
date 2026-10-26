@@ -1,14 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import Anthropic from "@anthropic-ai/sdk";
+
+import {
+  UserRole,
+} from "@/app/generated/prisma/client";
 
 import { prisma } from "@/app/lib/prisma";
 import { authOptions } from "@/app/lib/auth/auth-options";
-
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
-});
-
+import { canAnalyze } from "@/app/lib/auth/permissions";
+import { classifyFeedback } from "@/app/lib/ai/classifier";
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
@@ -20,6 +20,17 @@ export async function POST(request: NextRequest) {
           message: "Unauthorized",
         },
         { status: 401 }
+      );
+    }
+
+    // Only ADMIN and ANALYST can classify feedback.
+    if (!canAnalyze(session.user.role as UserRole)) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "You do not have permission to classify feedback",
+        },
+        { status: 403 }
       );
     }
 
@@ -52,17 +63,19 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Limit batch size to avoid very large AI requests
-    if (feedbackIds.length > 10) {
+    // Prevent extremely large requests.
+    if (feedbackIds.length > 50) {
       return NextResponse.json(
         {
           success: false,
-          message: "Maximum 10 feedback records can be classified at once",
+          message: "Maximum 50 feedback records can be classified at once",
         },
         { status: 400 }
       );
     }
 
+    // IMPORTANT:
+    // workspaceId guarantees tenant isolation.
     const feedback = await prisma.feedback.findMany({
       where: {
         id: {
@@ -85,6 +98,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Get themes belonging only to this workspace.
     const themes = await prisma.theme.findMany({
       where: {
         workspaceId,
@@ -92,7 +106,6 @@ export async function POST(request: NextRequest) {
       select: {
         id: true,
         name: true,
-        description: true,
       },
     });
 
@@ -106,161 +119,80 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const themeList = themes
-      .map(
-        (theme) =>
-          `${theme.id}: ${theme.name} - ${
-            theme.description || "No description"
-          }`
-      )
-      .join("\n");
-
-    const feedbackList = feedback
-      .map(
-        (item) =>
-          `ID: ${item.id}\nFeedback: "${item.text}"`
-      )
-      .join("\n\n");
-
-    const message = await anthropic.messages.create({
-      model: "claude-haiku-4-5-20251001",
-      max_tokens: 1500,
-      messages: [
-        {
-          role: "user",
-          content: `
-You are an AI customer-feedback classifier for the LOOP platform.
-
-Classify every feedback item below.
-
-Available themes:
-${themeList}
-
-Feedback items:
-${feedbackList}
-
-Return ONLY valid JSON in exactly this format:
-
-[
-  {
-    "feedbackId": 123,
-    "sentiment": "POSITIVE",
-    "themeId": 1,
-    "reason": "Short explanation"
-  }
-]
-
-Rules:
-
-- sentiment must be exactly POSITIVE, NEGATIVE, or NEUTRAL.
-- themeId must be one of the available theme IDs.
-- feedbackId must match one of the supplied feedback IDs.
-- Return exactly one result for every supplied feedback item.
-- Do not include markdown.
-- Do not include any text outside the JSON array.
-`,
-        },
-      ],
-    });
-
-    const responseText =
-      message.content[0]?.type === "text"
-        ? message.content[0].text
-        : "";
-
-    let results: Array<{
+    const updatedResults: Array<{
       feedbackId: number;
       sentiment: string;
-      themeId: number;
-      reason?: string;
-    }>;
+      sentimentScore: number;
+      themes: string[];
+      featureArea: string;
+      databaseThemes: Array<{
+        id: number;
+        name: string;
+      }>;
+    }> = [];
 
-    try {
-      results = JSON.parse(responseText);
-    } catch {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "AI returned invalid JSON",
-          rawResponse: responseText,
-        },
-        { status: 500 }
-      );
-    }
+    for (const feedbackItem of feedback) {
+      // Run the same local classifier that we already tested.
+      const classification = classifyFeedback(feedbackItem.text);
 
-    if (!Array.isArray(results)) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "AI returned an invalid result format",
-        },
-        { status: 500 }
-      );
-    }
-
-    const validSentiments = [
-      "POSITIVE",
-      "NEGATIVE",
-      "NEUTRAL",
-    ];
-
-    const updatedResults = [];
-
-    for (const result of results) {
-      if (
-        !feedbackIds.includes(Number(result.feedbackId)) ||
-        !validSentiments.includes(result.sentiment)
-      ) {
-        continue;
-      }
-
-      const selectedTheme = themes.find(
-        (theme) => theme.id === Number(result.themeId)
-      );
-
-      if (!selectedTheme) {
-        continue;
-      }
-
-      const feedbackItem = feedback.find(
-        (item) => item.id === Number(result.feedbackId)
-      );
-
-      if (!feedbackItem) {
-        continue;
-      }
-
-      await prisma.feedback.update({
-        where: {
-          id: feedbackItem.id,
-        },
-        data: {
-          sentiment: result.sentiment,
-        },
-      });
-
+      // Remove previous theme relationships.
       await prisma.feedbackTheme.deleteMany({
         where: {
           feedbackId: feedbackItem.id,
         },
       });
 
-      await prisma.feedbackTheme.create({
+      const databaseThemes: Array<{
+        id: number;
+        name: string;
+      }> = [];
+
+      // Connect detected themes that actually exist
+      // in the current workspace.
+      for (const themeName of classification.themes) {
+        const theme = themes.find(
+          (item) =>
+            item.name.toLowerCase() ===
+            themeName.toLowerCase()
+        );
+
+        if (!theme) {
+          continue;
+        }
+
+        await prisma.feedbackTheme.create({
+          data: {
+            feedbackId: feedbackItem.id,
+            themeId: theme.id,
+            confidence: 1,
+          },
+        });
+
+        databaseThemes.push({
+          id: theme.id,
+          name: theme.name,
+        });
+      }
+
+      // Update AI classification fields.
+      await prisma.feedback.update({
+        where: {
+          id: feedbackItem.id,
+        },
         data: {
-          feedbackId: feedbackItem.id,
-          themeId: selectedTheme.id,
-          confidence: 1,
+          sentiment: classification.sentiment,
+          sentimentScore: classification.sentimentScore,
+          featureArea: classification.featureArea,
         },
       });
 
       updatedResults.push({
         feedbackId: feedbackItem.id,
-        sentiment: result.sentiment,
-        theme: {
-          id: selectedTheme.id,
-          name: selectedTheme.name,
-        },
-        reason: result.reason || null,
+        sentiment: classification.sentiment,
+        sentimentScore: classification.sentimentScore,
+        themes: classification.themes,
+        featureArea: classification.featureArea,
+        databaseThemes,
       });
     }
 

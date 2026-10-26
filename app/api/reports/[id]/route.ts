@@ -133,9 +133,16 @@ export async function PATCH(
 
     const body = await request.json();
 
-    const { title, content } = body;
+    const title =
+      typeof body.title === "string" ? body.title.trim() : existingReport.title;
 
-    if (!title || typeof title !== "string" || !title.trim()) {
+    const content =
+      typeof body.content === "string"
+        ? body.content.trim()
+        : existingReport.content;
+
+    // Keep existing values if the Edit form sends only one field.
+    if (!title) {
       return NextResponse.json(
         {
           success: false,
@@ -145,7 +152,7 @@ export async function PATCH(
       );
     }
 
-    if (!content || typeof content !== "string" || !content.trim()) {
+    if (!content) {
       return NextResponse.json(
         {
           success: false,
@@ -160,8 +167,8 @@ export async function PATCH(
         id,
       },
       data: {
-        title: title.trim(),
-        content: content.trim(),
+        title,
+        content,
       },
     });
 
